@@ -1,6 +1,6 @@
 # Đồ án: Triển khai Cân bằng tải Web (Web Load Balancing) với Nginx
 
-**Nhóm thực hiện:**  Nhóm 16: BonChangLinhNguLam
+**Sinh viên thực hiện:** Vũ Thiên Trường (MSSV: 2001231015) - Nhóm [Điền tên nhóm vào đây]
 
 ---
 
@@ -26,5 +26,48 @@ Dự án này mô phỏng một hệ thống phân phối tải truy cập (Load
 
 ### Bước 1: Khởi động hệ thống
 Mở thư mục chứa source code bằng VS Code. Mở Terminal lên (nhấn `Ctrl + \``) và gõ lệnh sau để dựng toàn bộ hệ thống ở chế độ chạy ngầm:
+
 ```bash
 docker-compose up -d
+```
+*Lúc này, bạn có thể truy cập `http://localhost:8008` trên trình duyệt để thấy WEB1 đang hoạt động.*
+
+### Bước 2: Thiết lập màn hình giám sát (Log)
+Để thấy rõ Nginx chia tải thông minh như thế nào, hãy mở **2 Tab Terminal** mới trong VS Code (bấm dấu `+` trên khu vực Terminal) và chạy lần lượt các lệnh sau để theo dõi Log thời gian thực:
+
+* **Tab Terminal 1 (Theo dõi WEB1):** ```bash
+docker logs -f web1
+```
+
+* **Tab Terminal 2 (Theo dõi WEB2):** ```bash
+docker logs -f web2
+```
+
+### Bước 3: Thực hiện các Kịch bản kiểm thử (Test Cases)
+
+**Kịch bản 1: Giả lập tấn công / Tràn tải (Spillover)**
+Mở thêm 1 Tab Terminal thứ 3 và sử dụng công cụ `wrk` (chạy qua Docker) để bắn 50 kết nối cùng lúc vào hệ thống trong 10 giây:
+
+```bash
+docker run --rm williamyeh/wrk -t2 -c50 -d10s http://host.docker.internal:8008/
+```
+👉 *Kết quả quan sát:* WEB1 sẽ chạy log cho 5 kết nối đầu tiên. Tab log của WEB2 sẽ lập tức nhảy liên tục để gánh phần traffic bị dội ra từ WEB1 do quá tải.
+
+**Kịch bản 2: Giả lập sự cố sập máy chủ (Failover)**
+Trong lúc hệ thống đang chạy bình thường, tiến hành "rút phích cắm" tắt nóng WEB1 bằng lệnh:
+
+```bash
+docker stop web1
+```
+👉 *Kết quả quan sát:* Nginx phát hiện WEB1 ngưng hoạt động và lập tức đẩy 100% traffic sang WEB2. Dịch vụ web vẫn truy cập bình thường không báo lỗi, trang web tự động chuyển sang hiển thị nội dung của WEB2.
+
+### Bước 4: Khôi phục và Dọn dẹp hệ thống
+* Để bật lại WEB1 (hồi sinh server): 
+```bash
+docker start web1
+```
+
+* Sau khi Demo xong, dùng lệnh sau để tắt và xóa toàn bộ các container, trả lại tài nguyên cho máy:
+```bash
+docker-compose down
+```
