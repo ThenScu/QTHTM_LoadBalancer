@@ -1,0 +1,9 @@
+docker run --rm williamyeh/wrk -t4 -c500 -d60s http://host.docker.internal:8008/
+
+-t4: Dùng 4 luồng (threads) để bắn.
+
+-c500: Mở 500 kết nối đồng thời.
+
+-d60s: Tấn công liên tục trong 60 giây.
+
+http://host.docker.internal:8008/: Bắn thẳng vào cổng Load Balancer.
