@@ -1,6 +1,6 @@
 # Đồ án: Triển khai Cân bằng tải Web (Web Load Balancing) với Nginx
 
-**Sinh viên thực hiện:** Vũ Thiên Trường (MSSV: 2001231015) - Nhóm [Điền tên nhóm vào đây]
+**Nhóm thực hiện:**  Nhóm 16: BonChangLinhNguLam
 
 ---
 
