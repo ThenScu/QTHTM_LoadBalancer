@@ -28,18 +28,20 @@ Dự án này mô phỏng một hệ thống phân phối tải truy cập (Load
 Mở thư mục chứa source code bằng VS Code. Mở Terminal lên (nhấn `Ctrl + \``) và gõ lệnh sau để dựng toàn bộ hệ thống ở chế độ chạy ngầm:
 
 ```bash
-docker-compose up -d
+docker-compose up -d --build
 ```
 *Lúc này, bạn có thể truy cập `http://localhost:8008` trên trình duyệt để thấy WEB1 đang hoạt động.*
 
 ### Bước 2: Thiết lập màn hình giám sát (Log)
 Để thấy rõ Nginx chia tải thông minh như thế nào, hãy mở **2 Tab Terminal** mới trong VS Code (bấm dấu `+` trên khu vực Terminal) và chạy lần lượt các lệnh sau để theo dõi Log thời gian thực:
 
-* **Tab Terminal 1 (Theo dõi WEB1):** ```bash
+* **Tab Terminal 1 (Theo dõi WEB1):** 
+```bash
 docker logs -f web1
 ```
 
-* **Tab Terminal 2 (Theo dõi WEB2):** ```bash
+* **Tab Terminal 2 (Theo dõi WEB2):** 
+```bash
 docker logs -f web2
 ```
 
@@ -49,7 +51,7 @@ docker logs -f web2
 Mở thêm 1 Tab Terminal thứ 3 và sử dụng công cụ `wrk` (chạy qua Docker) để bắn 50 kết nối cùng lúc vào hệ thống trong 10 giây:
 
 ```bash
-docker run --rm williamyeh/wrk -t2 -c50 -d10s http://host.docker.internal:8008/
+docker run --rm williamyeh/wrk -t4 -c500 -d60s http://host.docker.internal:8008/
 ```
 👉 *Kết quả quan sát:* WEB1 sẽ chạy log cho 5 kết nối đầu tiên. Tab log của WEB2 sẽ lập tức nhảy liên tục để gánh phần traffic bị dội ra từ WEB1 do quá tải.
 
