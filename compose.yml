@@ -18,7 +18,12 @@ services:
     volumes:
       - ./web1/index.html:/usr/share/nginx/html/index.html:ro
     networks:
-      - lb
+      - lb# Giới hạn tài nguyên của con web1
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.05' # Chỉ cho dùng 5% sức mạnh của 1 nhân CPU
+    #       memory: 20M  # Chỉ cho dùng tối đa 20MB RAM
 
   web2:
     image: nginx:alpine
