@@ -51,7 +51,8 @@ docker logs -f web2
 Mở thêm 1 Tab Terminal thứ 3 và sử dụng công cụ `wrk` (chạy qua Docker) để bắn 50 kết nối cùng lúc vào hệ thống trong 10 giây:
 
 ```bash
-docker run --rm williamyeh/wrk -t4 -c500 -d60s http://host.docker.internal:8008/
+docker run --rm williamyeh/wrk -t4 -c20 -d20s http://host.docker.internal:8008/
+
 ```
 👉 *Kết quả quan sát:* WEB1 sẽ chạy log cho 5 kết nối đầu tiên. Tab log của WEB2 sẽ lập tức nhảy liên tục để gánh phần traffic bị dội ra từ WEB1 do quá tải.
 
