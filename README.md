@@ -37,6 +37,7 @@ Hệ thống đi kèm với một kịch bản kiểm thử tự động đượ
 * **Mục tiêu:** Đo lường thông lượng xử lý và độ trễ phản hồi khi hệ thống đối mặt với lượng truy cập đa luồng cường độ cao.
 * **Cách hoạt động:** Script `test_lb_stress.py` ứng dụng kỹ thuật đa luồng để mô phỏng hàng ngàn request dội thẳng vào hệ thống cùng lúc. Kết quả đầu ra sẽ cung cấp các chỉ số hiệu năng chuyên sâu như thời gian phản hồi trung bình, độ trễ tối đa và tỷ lệ xử lý thành công.
 
+
 ## 🚀 Quick Start & Demo Tự Động
 
 Mở Terminal tại thư mục gốc của dự án và chạy lần lượt các lệnh dưới đây để khởi động và kiểm thử hệ thống:

@@ -1,0 +1,73 @@
+{
+  "timestamp": "2026-03-30T01:36:42.056435",
+  "url": "http://localhost:8008",
+  "findings": {
+    "backend_detection": {
+      "headers": {
+        "Server": "nginx/1.29.5",
+        "X-Powered-By": "N/A",
+        "X-Real-IP": "N/A",
+        "X-Forwarded-For": "N/A"
+      },
+      "body": {
+        "backend": "WEB1"
+      },
+      "timing": [
+        7.032,
+        6.64,
+        3.856,
+        4.941,
+        3.612
+      ]
+    },
+    "header_injection": {},
+    "path_traversal": {
+      "accessible_paths": [
+        "/",
+        "/../"
+      ],
+      "errors": [
+        "/admin",
+        "/admin/",
+        "/...%2f...%2f",
+        "/etc/passwd"
+      ]
+    },
+    "sql_injection": {
+      "reflected": [],
+      "errors": []
+    },
+    "security_headers": {
+      "present": [],
+      "missing": [
+        "Strict-Transport-Security",
+        "X-Content-Type-Options",
+        "X-Frame-Options",
+        "X-XSS-Protection",
+        "Content-Security-Policy",
+        "Access-Control-Allow-Origin"
+      ]
+    },
+    "timing_attacks": {
+      "timings": [
+        {
+          "payload": "[empty]",
+          "avg_ms": 8.748865127563477
+        },
+        {
+          "payload": "' OR 1=1--",
+          "avg_ms": 13.152074813842773
+        },
+        {
+          "payload": "' OR 1=1/*",
+          "avg_ms": 8.516979217529297
+        },
+        {
+          "payload": "admin' --",
+          "avg_ms": 6.76112174987793
+        }
+      ],
+      "variance": 0
+    }
+  }
+}
