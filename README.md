@@ -1,76 +1,49 @@
-# Đồ án: Triển khai Cân bằng tải Web (Web Load Balancing) với Nginx
+# Đồ án: Triển khai Nginx Load Balancer (Thuật toán Round-Robin)
 
 **Nhóm thực hiện:** 16 [BonChangLinhNguLam] 
 
 ---
 
 ## 📌 Giới thiệu dự án
-Dự án này mô phỏng một hệ thống phân phối tải truy cập (Load Balancing) sử dụng Nginx đứng trước 2 Web Server riêng biệt. 
+Dự án này triển khai một hệ thống Load Balancer sử dụng Nginx đứng trước 2 Web Server độc lập. 
 
-Điểm nổi bật của Demo này là hệ thống KHÔNG sử dụng thuật toán chia tải (Round-Robin) cơ bản, mà được thiết lập theo mô hình **Active - Backup** sát với cấu trúc thực tế của doanh nghiệp:
-* **WEB1 (Server Chính):** Gánh toàn bộ traffic mặc định. Được cấu hình giới hạn sức chịu đựng tối đa 5 kết nối cùng lúc (`max_conns=5`).
-* **WEB2 (Server Dự phòng):** Nằm ở trạng thái ngủ đông (`backup`). Trình quản lý Nginx sẽ chỉ "đánh thức" WEB2 để tiếp khách trong 2 trường hợp khẩn cấp:
-  1. **Tràn tải (Spillover):** Khi WEB1 đạt ngưỡng giới hạn 5 khách.
-  2. **Sự cố (Failover):** Khi WEB1 bị chết/sập nguồn đột ngột. Hệ thống đảm bảo tính sẵn sàng cao (HA), khách hàng không bị lỗi gián đoạn dịch vụ.
-
----
-
-## 🛠 Phần mềm yêu cầu
-Để chạy được bản Demo này, máy tính của bạn cần cài đặt sẵn:
-1. **Docker Desktop:** Để ảo hóa và chạy các dịch vụ (Nginx, Web1, Web2) dưới dạng Container.
-2. **Visual Studio Code (VS Code):** Môi trường viết code và chạy Terminal tích hợp để quan sát Log hệ thống.
+Khác với cấu hình dự phòng thông thường, hệ thống này được thiết lập chạy song song hai máy chủ để tối ưu hóa hiệu suất, với các tính năng chính:
+* **Thuật toán Round-Robin:** Phân phối đều lượng truy cập theo tỷ lệ 50-50 cho cả WEB1 và WEB2. Cả hai server đều hoạt động hết công suất để phục vụ khách hàng.
+* **Cơ chế Failover thông minh:** Tích hợp `proxy_next_upstream`. Nếu Nginx phát hiện WEB1 hoặc WEB2 bị lỗi hoặc sập nguồn, nó sẽ tự động chuyển hướng toàn bộ traffic sang server còn sống ngay lập tức. Đảm bảo dịch vụ web không bao giờ bị gián đoạn.
+* **Tối ưu hóa kết nối:** Sử dụng `keepalive` connection pooling để giảm độ trễ khi tạo kết nối mới giữa Nginx và các backend server.
 
 ---
 
-## 🚀 Hướng dẫn khởi chạy và Demo
+## 🛠 Yêu cầu hệ thống
+Để chạy bản Demo và bộ Test Suite, máy tính của bạn cần có:
+1. **Docker Desktop:** Để chạy hệ thống Nginx và các Web Server dưới dạng container.
+2. **Python 3.7+:** Để khởi chạy các kịch bản kiểm thử tự động.
+3. **Trình soạn thảo code:** VS Code hoặc bất kỳ IDE nào có Terminal tích hợp.
 
-### Bước 1: Khởi động hệ thống
-Mở thư mục chứa source code bằng VS Code. Mở Terminal lên (nhấn `Ctrl + \``) và gõ lệnh sau để dựng toàn bộ hệ thống ở chế độ chạy ngầm:
+---
+
+## 🚀 Quick Start & Demo Tự Động
+
+Mở Terminal tại thư mục gốc của dự án và chạy lần lượt các lệnh dưới đây để khởi động và kiểm thử hệ thống:
 
 ```bash
+# 1. Cài đặt thư viện Python (Chỉ chạy 1 lần đầu tiên)
+pip install requests
+
+# 2. Dựng và khởi động hệ thống ngầm qua Docker
 docker-compose up -d --build
-```
-*Lúc này, bạn có thể truy cập `http://localhost:8008` trên trình duyệt để thấy WEB1 đang hoạt động.*
 
-### Bước 2: Thiết lập màn hình giám sát (Log)
-Để thấy rõ Nginx chia tải thông minh như thế nào, hãy mở **2 Tab Terminal** mới trong VS Code (bấm dấu `+` trên khu vực Terminal) và chạy lần lượt các lệnh sau để theo dõi Log thời gian thực:
+# 3. Chạy các kịch bản test tự động
+python test_lb_basic.py -r 20               # Kịch bản 1: Test tỷ lệ chia đều traffic 50-50
+python test_lb_failover.py -r 15            # Kịch bản 2: Test tự động bẻ lái khi tắt nóng 1 server
+python test_lb_stress.py -d 30 -t 3 -r 5    # Kịch bản 3: Ép xung hệ thống, đo thời gian phản hồi
+python test_lb_security.py                  # Kịch bản 4: Rà quét và phát hiện lỗi bảo mật
 
-* **Tab Terminal 1 (Theo dõi WEB1):** 
-```bash
-docker logs -f web1
-```
+# 4. Xem báo cáo kết quả chi tiết (Được tự động sinh ra sau khi chạy test)
+cat stress_test_report_*.json
+cat failover_report_*.json
+cat security_findings_*.json
 
-* **Tab Terminal 2 (Theo dõi WEB2):** 
-```bash
-docker logs -f web2
-```
-
-### Bước 3: Thực hiện các Kịch bản kiểm thử (Test Cases)
-
-**Kịch bản 1: Giả lập tấn công / Tràn tải (Spillover)**
-Mở thêm 1 Tab Terminal thứ 3 và sử dụng công cụ `wrk` (chạy qua Docker) để bắn 50 kết nối cùng lúc vào hệ thống trong 10 giây:
-
-```bash
-docker run --rm williamyeh/wrk -t4 -c20 -d20s http://host.docker.internal:8008/
-
-```
-👉 *Kết quả quan sát:* WEB1 sẽ chạy log cho 5 kết nối đầu tiên. Tab log của WEB2 sẽ lập tức nhảy liên tục để gánh phần traffic bị dội ra từ WEB1 do quá tải.
-
-**Kịch bản 2: Giả lập sự cố sập máy chủ (Failover)**
-Trong lúc hệ thống đang chạy bình thường, tiến hành "rút phích cắm" tắt nóng WEB1 bằng lệnh:
-
-```bash
-docker stop web1
-```
-👉 *Kết quả quan sát:* Nginx phát hiện WEB1 ngưng hoạt động và lập tức đẩy 100% traffic sang WEB2. Dịch vụ web vẫn truy cập bình thường không báo lỗi, trang web tự động chuyển sang hiển thị nội dung của WEB2.
-
-### Bước 4: Khôi phục và Dọn dẹp hệ thống
-* Để bật lại WEB1 (hồi sinh server): 
-```bash
-docker start web1
-```
-
-* Sau khi Demo xong, dùng lệnh sau để tắt và xóa toàn bộ các container, trả lại tài nguyên cho máy:
-```bash
+# 5. Dọn dẹp tài nguyên sau khi hoàn thành Demo
 docker-compose down
 ```
