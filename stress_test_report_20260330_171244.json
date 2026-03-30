@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-03-30T17:12:44.290172",
+  "url": "http://localhost:8008",
+  "configuration": {
+    "duration": 10
+  },
+  "metrics": {
+    "duration": 10.041240453720093,
+    "total_requests": 457,
+    "successful": 457,
+    "failed": 0,
+    "success_rate": 100.0,
+    "throughput": 45.51230518841823,
+    "backend_distribution": {
+      "WEB1": 60,
+      "WEB2": 60,
+      "UNKNOWN": 337
+    },
+    "response_time": {
+      "min": 2.341747283935547,
+      "max": 28.786659240722656,
+      "avg": 9.041910881025785,
+      "median": 4.944324493408203,
+      "p95": 25.847673416137695,
+      "p99": 27.88376808166504,
+      "stdev": 7.774505434368892
+    }
+  }
+}
