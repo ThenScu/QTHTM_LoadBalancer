@@ -63,9 +63,10 @@ pip install requests
 docker-compose up -d --build
 
 # 3. Chạy các kịch bản test tự động
-python test_lb_basic.py -r 20               # Kịch bản 1: Test tỷ lệ chia đều traffic 50-50
-python test_lb_failover.py -r 15            # Kịch bản 2: Test tự động bẻ lái khi tắt nóng 1 server
-python test_lb_stress.py -d 30 -t 3 -r 5    # Kịch bản 3: Ép xung hệ thống, đo thời gian phản hồi
+python test_lb_basic.py -r 20                             # Kịch bản 1: Test tỷ lệ chia đều traffic 50-50
+python test_lb_failover.py -r 15                          # Kịch bản 2: Test tự động bẻ lái khi tắt nóng 1 server
+python test_lb_stress.py -d 30 -t 3 -r 5                  # Kịch bản 3: Ép xung hệ thống, đo thời gian phản hồi
+python test_lb_advanced_failover.py -d 30 -t 3 -r 5       # Kịch bản 4: Test tổng hợp (ngắt kết nối + DDOS)
 
 # 4. Xem báo cáo kết quả chi tiết (Được tự động sinh ra sau khi chạy test)
 cat stress_test_report_*.json
